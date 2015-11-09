@@ -1,5 +1,5 @@
 # docker-livy
-A Docker image for Livy, the REST Spark Server
+A Docker image for [Livy, the REST Spark Server](https://github.com/cloudera/hue/tree/master/apps/spark/java).
 
 ## Running 
 
