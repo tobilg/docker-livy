@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -yq --no-install-recommends --force-yes \
     rm -rf /var/lib/apt/lists/*
 
 # Overall ENV vars
-ENV SPARK_VERSION 1.5.1
+ENV SPARK_VERSION 1.6.0
 ENV MESOS_BUILD_VERSION 0.25.0-0.2.70
 ENV LIVY_APP_PATH /apps/livy
 
@@ -51,7 +51,7 @@ RUN git clone https://github.com/cloudera/hue.git && \
     mvn -DskipTests -Dspark.version=$SPARK_VERSION clean package && \
     mkdir -p $LIVY_APP_PATH && \
     cp -a /hue/apps/spark/java/. $LIVY_APP_PATH/ && \
-	rm -rf /hue
+    rm -rf /hue
 
 # Add custom files, set permissions
 
