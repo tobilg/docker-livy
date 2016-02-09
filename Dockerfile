@@ -53,10 +53,20 @@ RUN git clone https://github.com/cloudera/hue.git && \
     cp -a /hue/apps/spark/java/. $LIVY_APP_PATH/ && \
     rm -rf /hue
 
-# Add custom files, set permissions
-
+# Additional env variables
 ENV HADOOP_CONF_DIR /etc/hadoop/conf
+ENV LIVY_CONF_DIR $LIVY_APP_PATH/conf
+	
+# Add custom files, set permissions
+ADD entrypoint.sh .
 
+RUN rm $LIVY_CONF_DIR/spark-user-configurable-options.template
+
+COPY spark-user-configurable-options.conf $LIVY_CONF_DIR
+
+RUN chmod +x entrypoint.sh
+
+# Expose port
 EXPOSE 8998
 
-ENTRYPOINT ["/apps/livy/bin/livy-server"]
+ENTRYPOINT ["/entrypoint.sh"]
