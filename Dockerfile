@@ -1,4 +1,4 @@
-FROM ubuntu:14.04.3
+FROM ubuntu:14.04
 MAINTAINER tobilg <fb.tools.github@gmail.com>
 
 # Add R list
@@ -19,8 +19,19 @@ RUN apt-get update && apt-get install -yq --no-install-recommends --force-yes \
 
 # Overall ENV vars
 ENV SPARK_VERSION 1.6.0
-ENV MESOS_BUILD_VERSION 0.25.0-0.2.70
+ENV MESOS_BUILD_VERSION 0.27.1-2.0.226
+
+# Set install path for Livy
 ENV LIVY_APP_PATH /apps/livy
+
+# Set Hadoop config directory
+ENV HADOOP_CONF_DIR /etc/hadoop/conf
+
+# Set Spark home directory
+ENV SPARK_HOME /usr/local/spark
+
+# Set native Mesos library path
+ENV MESOS_NATIVE_JAVA_LIBRARY /usr/local/lib/libmesos.so
 
 # Mesos install
 RUN wget http://downloads.mesosphere.io/master/ubuntu/14.04/mesos_$MESOS_BUILD_VERSION.ubuntu1404_amd64.deb && \
@@ -33,36 +44,28 @@ ENV SPARK_DOWNLOAD_URL http://d3kbcqa49mib13.cloudfront.net/$SPARK_VERSION_STRIN
 
 # Download and unzip Spark
 RUN wget $SPARK_DOWNLOAD_URL && \
-    mkdir -p /usr/local/spark && \
+    mkdir -p $SPARK_HOME && \
     tar xvf $SPARK_VERSION_STRING.tgz -C /tmp && \
-    cp -rf /tmp/$SPARK_VERSION_STRING/* /usr/local/spark/ && \
+    cp -rf /tmp/$SPARK_VERSION_STRING/* $SPARK_HOME && \
     rm -rf -- /tmp/$SPARK_VERSION_STRING && \
     rm spark-$SPARK_VERSION-bin-hadoop2.6.tgz
 
-# Set SPARK_HOME
-ENV SPARK_HOME /usr/local/spark
-
-# Set native Mesos library path
-ENV MESOS_NATIVE_JAVA_LIBRARY /usr/local/lib/libmesos.so
-
-# Clone Hue/Livy repository
-RUN git clone https://github.com/cloudera/hue.git && \
-    cd /hue/apps/spark/java && \
+# Clone Livy repository
+RUN mkdir -p /apps && \
+    cd /apps && \
+	git clone https://github.com/cloudera/livy.git && \
+	cd $LIVY_APP_PATH && \
     mvn -DskipTests -Dspark.version=$SPARK_VERSION clean package && \
-    mkdir -p $LIVY_APP_PATH && \
-    cp -a /hue/apps/spark/java/. $LIVY_APP_PATH/ && \
-    rm -rf /hue
-
-# Additional env variables
-ENV HADOOP_CONF_DIR /etc/hadoop/conf
-ENV LIVY_CONF_DIR $LIVY_APP_PATH/conf
+	mkdir -p $LIVY_APP_PATH/upload
 	
 # Add custom files, set permissions
 ADD entrypoint.sh .
 
-RUN rm $LIVY_CONF_DIR/spark-user-configurable-options.template
+# Remove config defaults
+RUN rm $LIVY_APP_PATH/conf/livy-defaults.conf.template
 
-COPY spark-user-configurable-options.conf $LIVY_CONF_DIR
+COPY spark-user-configurable-options.conf $LIVY_APP_PATH/conf
+COPY livy-defaults.conf $LIVY_APP_PATH/conf
 
 RUN chmod +x entrypoint.sh
 
