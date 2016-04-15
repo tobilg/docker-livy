@@ -6,4 +6,4 @@ else
   export LIBPROCESS_IP=$HOST
 fi
 
-/apps/livy/bin/livy-server $@
+$LIVY_APP_PATH/bin/livy-server $@
