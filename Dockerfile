@@ -1,5 +1,5 @@
 FROM ubuntu:14.04
-MAINTAINER tobilg <fb.tools.github@gmail.com>
+MAINTAINER tobilg <tobilg@gmail.com>
 
 # Add R list
 RUN echo 'deb http://cran.mirrors.hoobly.com/bin/linux/ubuntu vivid/' | sudo tee -a /etc/apt/sources.list.d/r.list && \
