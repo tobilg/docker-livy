@@ -67,12 +67,6 @@ RUN mkdir -p /apps/build && \
 # Add custom files, set permissions
 ADD entrypoint.sh .
 
-# Remove config defaults
-RUN rm $LIVY_APP_PATH/conf/livy-defaults.conf.template
-
-ADD spark-user-configurable-options.conf $LIVY_APP_PATH/conf/spark-user-configurable-options.conf
-ADD livy-defaults.conf $LIVY_APP_PATH/conf/livy-defaults.conf
-
 RUN chmod +x entrypoint.sh
 
 # Expose port
