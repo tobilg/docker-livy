@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -yq --no-install-recommends --force-yes \
 # Overall ENV vars
 ENV SPARK_VERSION 1.6.1
 ENV MESOS_BUILD_VERSION 0.28.0-2.0.16
-ENV LIVY_BUILD_VERSION livy-server-0.2.0-SNAPSHOT
+ENV LIVY_BUILD_VERSION livy-server-0.3.0-SNAPSHOT
 
 # Set install path for Livy
 ENV LIVY_APP_PATH /apps/$LIVY_BUILD_VERSION
